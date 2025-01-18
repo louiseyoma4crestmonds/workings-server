@@ -76,7 +76,9 @@ def sign_in(request):
 def register(request):
     if not ApplicationUserAccount.objects.filter(email=request.data['email']).exists():
         user_account = ApplicationUserAccount(
-            email=request.data['email'], first_name=request.data['firstName'], last_name=request.data['lastName']
+            email=request.data['email'], 
+            first_name=request.data['firstName'], 
+            last_name=request.data['lastName'], 
         )
         password=generate_random_string(8, "letters")
         user_account.save()
@@ -89,8 +91,9 @@ def register(request):
 
         email_context = {
             'name': user_account.first_name,
-            'email': user_account.first_name,
-            'password': password
+            'email': user_account.email,
+            'password': password,
+            'promo_code': code
         }
         try:
             send_email_to_user(
