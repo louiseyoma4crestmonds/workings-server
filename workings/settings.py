@@ -62,6 +62,9 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
+
+
+
 ROOT_URLCONF = 'workings.urls'
 
 CORS_ORIGIN_ALLOW_ALL = True
