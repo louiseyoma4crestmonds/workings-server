@@ -32,3 +32,39 @@ class TrackingIdHistory(models.Model):
 
     def __str__(self):
         return self.tracking_id.tracking_id + "|" + self.activity
+    
+
+class ConsignmentUser(models.Model):
+    user=models.ForeignKey(ApplicationUserAccount, on_delete=models.CASCADE)
+    date=models.DateTimeField(default=timezone.now)
+    secreteQuestion=models.TextField()
+    secreteAnswer=models.TextField()
+    address1=models.TextField()
+    address2=models.TextField()
+    company=models.CharField(default="GlobeGoExpress", max_length=255)
+    country=models.CharField(default="Japan", max_length=255)
+    postal_code=models.CharField(default="232323", max_length=255)
+    province=models.CharField(default="MIT", max_length=255)
+    phone=models.CharField(default="+1234567890", max_length=255)
+    city=models.CharField(default="New Jersey", max_length=255)
+    terms=models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.user.email)
+
+class BusinessAccount(models.Model):
+    email=models.EmailField(default="admin@globegoexpress.com", max_length=255)
+    first_name=models.CharField(default="GlobeGoExpress", max_length=255)
+    last_name=models.CharField(default="GlobeGoExpress", max_length=255)
+    address=models.TextField()
+    message=models.TextField()
+    company=models.CharField(default="GlobeGoExpress", max_length=255)
+    country=models.CharField(default="Japan", max_length=255)
+    postal_code=models.CharField(default="232323", max_length=255)
+    vat=models.CharField(default="MIT", max_length=255)
+    phone=models.CharField(default="+1234567890", max_length=255)
+    city=models.CharField(default="New Jersey", max_length=255)
+    terms=models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.email)

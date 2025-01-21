@@ -7,6 +7,7 @@ urlpatterns = [
     path('logoutall', knox_views.LogoutAllView.as_view(), name='logoutall'),
     path('sign-in', sign_in),
     path('register', register),
+    path('business-account/request', request_business_account),
 
     
 ]

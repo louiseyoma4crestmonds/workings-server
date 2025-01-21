@@ -11,6 +11,8 @@ from .serializers import (
     SigninSerializer,
 )
 
+from BBConsignment.models import BusinessAccount, ConsignmentUser
+
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
@@ -74,26 +76,43 @@ def sign_in(request):
 
 @api_view(['POST'])
 def register(request):
+    print(request.data)
     if not ApplicationUserAccount.objects.filter(email=request.data['email']).exists():
         user_account = ApplicationUserAccount(
             email=request.data['email'], 
             first_name=request.data['firstName'], 
-            last_name=request.data['lastName'], 
+            last_name=request.data['lastName'],
+            country=request.data['country']
         )
-        password=generate_random_string(8, "letters")
-        user_account.save()
-        user_account.set_password(password)
-        user_account.save()
-
-        code=generate_random_string(8, "letters")
-        new_promo_code=PromoCode(user=user_account, name=code)
-        new_promo_code.save()
+        if(request.data['password']==request.data['confirmPassword']):
+            password=request.data['password']
+            user_account.set_password(password)
+            user_account.save()
+        else:
+            return JsonResponse({
+                "status": "Password Mismatch",
+                "code": status.HTTP_406_NOT_ACCEPTABLE,
+            })
+        
+        consignment_user=ConsignmentUser(
+            user=user_account,
+            secreteQuestion=request.data['secreteQuestion'],
+            secreteAnswer=request.data['secreteAnswer'],
+            address1=request.data['address1'],
+            address2=request.data['address2'],
+            company=request.data['company'],
+            country=request.data['country'],
+            postal_code=request.data['postalCode'],
+            province=request.data['province'],
+            phone=request.data['phone'],
+            city=request.data['city'],
+        )
+        consignment_user.save()
 
         email_context = {
             'name': user_account.first_name,
             'email': user_account.email,
             'password': password,
-            'promo_code': code
         }
         try:
             send_email_to_user(
@@ -120,5 +139,36 @@ def register(request):
 
 
 
-
+@api_view(['POST'])
+def request_business_account(request):
+    if not BusinessAccount.objects.filter(email=request.data['email']).exists():
+        try:
+            business_account = BusinessAccount(
+                email=request.data['email'], 
+                first_name=request.data['firstName'], 
+                last_name=request.data['lastName'],
+                address=request.data['address1'],
+                message=request.data['message'],
+                company=request.data['company'],
+                postal_code=request.data['postalCode'],
+                vat=request.data['vat'],
+                phone=request.data['phone'],
+                city=request.data['city'],
+            )
+            business_account.save()
+        except KeyError:
+            return JsonResponse({
+                "status": "All fields are required",
+                "code": status.is_client_error,
+            })
+        else:
+            return JsonResponse({
+                "status": "success",
+                "code": status.HTTP_201_CREATED,
+            })
+    else:
+        return JsonResponse({
+            "status": "Request with email already exists",
+            "code": status.HTTP_406_NOT_ACCEPTABLE,
+        })
 
