@@ -110,7 +110,7 @@ def register(request):
         consignment_user.save()
 
         email_context = {
-            'name': user_account.first_name,
+            'first_name': user_account.first_name,
             'email': user_account.email,
             'password': password,
         }
